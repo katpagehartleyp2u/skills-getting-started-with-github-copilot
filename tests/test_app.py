@@ -19,12 +19,17 @@ def client():
 
 
 def test_unregister_participant_removes_email(client):
-    signup_response = client.post("/activities/Chess Club/signup?email=student@example.com")
-    assert signup_response.status_code == 200
+    # Arrange
+    activity_name = "Chess Club"
+    email = "student@example.com"
+    client.post(f"/activities/{activity_name}/signup?email={email}")
 
-    unregister_response = client.delete("/activities/Chess Club/signup?email=student@example.com")
+    # Act
+    unregister_response = client.delete(f"/activities/{activity_name}/signup?email={email}")
+
+    # Assert
     assert unregister_response.status_code == 200
-    assert unregister_response.json()["message"] == "Removed student@example.com from Chess Club"
+    assert unregister_response.json()["message"] == f"Removed {email} from {activity_name}"
 
-    activity = app_module.activities["Chess Club"]
-    assert "student@example.com" not in activity["participants"]
+    activity = app_module.activities[activity_name]
+    assert email not in activity["participants"]
